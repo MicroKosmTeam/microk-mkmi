@@ -1,1 +1,1 @@
-# mkmi
+# MKMI: MicroK Module Interface
