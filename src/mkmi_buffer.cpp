@@ -4,9 +4,39 @@
 #include <sys/printk.hpp>
 
 namespace MKMI {
-namespace BUFFER {
-uint64_t InterkernelIOCtl(Buffer *buffer, BufferOperation operation, va_list ap) {
-	uint64_t result = 0;
+Buffer *BufferCreate(uint64_t code, BufferType type, size_t size) {
+	Buffer *destBuffer;
+
+	switch(type) {
+		case COMMUNICATION_MODULEKERNEL:
+		case COMMUNICATION_INTERMODULE:
+		case DATA_MODULE_GENERIC: {
+			destBuffer = Malloc(size + sizeof(Buffer) + 1);
+			memset(destBuffer, 0, size);
+			destBuffer->address = (uintptr_t)destBuffer;
+			}
+			break;
+		default:
+			return NULL;
+	}
+
+	destBuffer->type = type;
+	destBuffer->readable = true;
+	destBuffer->size = size;
+
+	return destBuffer;
+}
+
+uint64_t BufferIO(Buffer *buffer, BufferOperation operation, ...) {
+	if (buffer == NULL) return 0;
+	if (!buffer->readable) return 0;
+
+	buffer->readable = false;
+
+	uint64_t result;
+
+	va_list ap;
+	va_start(ap, operation);
 
 	switch(operation) {
 		case OPERATION_READDATA: {
@@ -34,61 +64,6 @@ uint64_t InterkernelIOCtl(Buffer *buffer, BufferOperation operation, va_list ap)
 			break;
 	}
 
-	return result;
-}
-
-Buffer *Create(BufferType type, size_t size) {
-	Buffer *destBuffer;
-
-	switch(type) {
-		case COMMUNICATION_INTERKERNEL: {
-			destBuffer = Malloc(size + sizeof(Buffer) + 1);
-			memset(destBuffer, 0, size);
-			destBuffer->address = (uintptr_t)destBuffer;
-			}
-			break;
-		case DATA_KERNEL_GENERIC: {
-			destBuffer = Malloc(size + sizeof(Buffer) + 1);
-			memset(destBuffer, 0, size);
-			destBuffer->address = (uintptr_t)destBuffer;
-			break;
-			}
-		default:
-			return NULL;
-	}
-
-	destBuffer->type = type;
-	destBuffer->readable = true;
-	destBuffer->size = size;
-
-	return destBuffer;
-}
-
-uint64_t IOCtl(Buffer *buffer, BufferOperation operation, ...) {
-	if (buffer == NULL) return 0;
-	if (!buffer->readable) return 0;
-
-	buffer->readable = false;
-
-	uint64_t result;
-
-	va_list ap;
-	va_start(ap, operation);
-
-	switch(buffer->type) {
-		case COMMUNICATION_INTERKERNEL: {
-			result = InterkernelIOCtl(buffer, operation, ap);
-			}
-			break;
-		case DATA_KERNEL_GENERIC: {
-			result = InterkernelIOCtl(buffer, operation, ap);
-			}
-			break;
-		default:
-			result = 0;
-			break;
-	}
-
 	buffer->readable = true;
 
 	va_end(ap);
@@ -96,23 +71,16 @@ uint64_t IOCtl(Buffer *buffer, BufferOperation operation, ...) {
 	return result;
 }
 
-#include <mm/heap.hpp>
-uint64_t Delete(Buffer *buffer) {
+uint64_t BufferDelete(Buffer *buffer) {
 	if (buffer == NULL) return 0;
 	if (!buffer->readable) return 0;
 
 	buffer->readable = false;
 
-
 	switch(buffer->type) {
-		case COMMUNICATION_INTERKERNEL: {
-			uintptr_t address = buffer->address;
-			size_t size = buffer->size + sizeof(Buffer);
-			memset(address, 0, size);
-			Free(address);
-			}
-			break;
-		case DATA_KERNEL_GENERIC: {
+		case COMMUNICATION_MODULEKERNEL:
+		case COMMUNICATION_INTERMODULE:
+		case DATA_MODULE_GENERIC: {
 			uintptr_t address = buffer->address;
 			size_t size = buffer->size + sizeof(Buffer);
 			memset(address, 0, size);
@@ -124,5 +92,4 @@ uint64_t Delete(Buffer *buffer) {
 	return 0;
 }
 
-}
 }

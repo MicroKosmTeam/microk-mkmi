@@ -8,17 +8,13 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include <mkmi_module.hpp>
 
 namespace MKMI {
-namespace BUFFER {
 	enum BufferType {
-		COMMUNICATION_USERKERNEL   = 0xC00,
-		COMMUNICATION_INTERKERNEL  = 0xC01,
-		COMMUNICATION_INTERUSER    = 0xC02,
+		COMMUNICATION_MODULEKERNEL = 0xC00,
+		COMMUNICATION_INTERMODULE  = 0xC02,
 
-		DATA_USER_GENERIC          = 0xD00,
-		DATA_KERNEL_GENERIC        = 0xD01,
+		DATA_MODULE_GENERIC        = 0xD00,
 	};
 
 	enum BufferOperation {
@@ -33,8 +29,12 @@ namespace BUFFER {
 		size_t size;
 	}__attribute__((packed));
 
-	Buffer *Create(BufferType type, size_t size);
-	uint64_t IOCtl(Buffer *buffer, BufferOperation operation, ...);
-	uint64_t Delete(Buffer *buffer);
-}
+	struct BufferMetadata {
+		uint64_t code;
+		Buffer *buffer;
+	};
+
+	Buffer *BufferCreate(uint64_t code, BufferType type, size_t size);
+	uint64_t BufferIO(Buffer *buffer, BufferOperation operation, ...);
+	uint64_t BufferDelete(Buffer *buffer);
 }
