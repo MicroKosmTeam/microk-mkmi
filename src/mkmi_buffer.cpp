@@ -8,7 +8,7 @@ Buffer *BufferCreate(uint64_t code, BufferType type, size_t size) {
 	Buffer *destBuffer;
 
 	switch(type) {
-		case COMMUNICATION_MODULEKERNEL:
+		case COMMUNICATION_MODULE_KERNEL:
 		case COMMUNICATION_INTERMODULE:
 		case DATA_MODULE_GENERIC: {
 			destBuffer = Malloc(size + sizeof(Buffer) + 1);
@@ -78,7 +78,7 @@ uint64_t BufferDelete(Buffer *buffer) {
 	buffer->readable = false;
 
 	switch(buffer->type) {
-		case COMMUNICATION_MODULEKERNEL:
+		case COMMUNICATION_MODULE_KERNEL:
 		case COMMUNICATION_INTERMODULE:
 		case DATA_MODULE_GENERIC: {
 			uintptr_t address = buffer->address;
