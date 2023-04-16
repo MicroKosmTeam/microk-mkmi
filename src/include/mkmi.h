@@ -5,8 +5,4 @@
 */
 
 #pragma once
-#include <mkmi_buffer.hpp>
-
-namespace MKMI {
-
-}
+#include <mkmi_buffer.h>
