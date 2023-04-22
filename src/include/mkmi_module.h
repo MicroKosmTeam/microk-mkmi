@@ -1,5 +1,5 @@
 /*
-   File: include/mkmi/mkmi_module.hpp
+   File: include/mkmi/mkmi_module.h
 
    MKMI module manager
 */
@@ -7,28 +7,39 @@
 #pragma once
 #include <stdint.h>
 #include <mkmi_version.h>
+#include <mkmi_buffer.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+struct MKMI_ModuleID {
+	char     *Name;            /* Module literal name */
+	char     *Author;          /* Author's name (literal) */
+
+	uint64_t Codename;         /* Module codename (unique per each writer) */
+	uint64_t Writer;           /* Person or organization that wrote the module (codename) */
+};
 
 struct MKMI_Module {
 	/* Mandatory data */
-	char     *Name;            /* Module literal name */
-	uint64_t Codename;         /* Module codename (unique per each writer) */
-	/* If conflicting codenames are found, bad things will happen */
-	char     *Author;          /* Author's name (literal) */
-	uint64_t Writer;           /* Person or organization that wrote the module (codename) */
-
-	/* Mandatory functions */
-	uint64_t (*InitFunction)();
-	void     (*DeinitFunction)();
-	uint64_t (*RequestOperator)();
-
+	/* Module ID: basic module information */
+	MKMI_ModuleID ID;
+	/* Module version: current version */
+	MKMI_VersionInfo Version;
+	
 	/* Optional data */
 	/* Versioning info: if not included, any version is accepted */
 	MKMI_VersionInfo MinimumVersion; /* Minimum MKMI version accepted */
 	MKMI_VersionInfo MaximumVersion; /* Maximum MKMI version accepted */
-
-	/* Optional functions */
-
-	/* Debug data */
-
-	/* Debug functions */
 };
+
+uint64_t MKMI_CallKernelFunction();
+uint64_t MKMI_CallUserFunction();
+
+uint64_t MKMI_RegisterModule(MKMI_Module *module);
+uint64_t MKMI_UnregisterModule(MKMI_ModuleID *id);
+
+#ifdef __cplusplus
+}
+#endif

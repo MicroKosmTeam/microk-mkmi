@@ -1,5 +1,5 @@
 /*
-   File: include/mkmi/mkmi_buffer.hpp
+   File: include/mkmi/mkmi_buffer.h
 
    MKMI buffer types and managment
 */
@@ -49,7 +49,7 @@ enum MKMI_BufferOperation {
 
 struct MKMI_Buffer {
 	uintptr_t address;
-	bool readable;
+	bool lock;
 	MKMI_BufferType type;
 	size_t size;
 }__attribute__((packed));

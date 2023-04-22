@@ -1,5 +1,5 @@
 /*
-   File: include/mkmi/mkmi_version.hpp
+   File: include/mkmi/mkmi_version.h
 
    MKMI version struct
 */

@@ -1,9 +1,10 @@
 #include <mkmi_buffer.h>
+#include <mkmi_mutex.h>
+
 #include <mm/pmm.hpp>
 #include <mm/memory.hpp>
 #include <sys/printk.hpp>
 
-extern "C" {
 MKMI_Buffer *MKMI_BufferCreate(uint64_t code, MKMI_BufferType type, size_t size) {
 	MKMI_Buffer *destBuffer;
 
@@ -21,17 +22,17 @@ MKMI_Buffer *MKMI_BufferCreate(uint64_t code, MKMI_BufferType type, size_t size)
 	}
 
 	destBuffer->type = type;
-	destBuffer->readable = true;
 	destBuffer->size = size;
+
+	MKMI_UnlockMutex(&destBuffer->lock);
 
 	return destBuffer;
 }
 
 uint64_t MKMI_BufferIO(MKMI_Buffer *buffer, MKMI_BufferOperation operation, ...) {
 	if (buffer == NULL) return 0;
-	if (!buffer->readable) return 0;
 
-	buffer->readable = false;
+	MKMI_LockMutex(&buffer->lock);
 
 	uint64_t result;
 
@@ -64,7 +65,7 @@ uint64_t MKMI_BufferIO(MKMI_Buffer *buffer, MKMI_BufferOperation operation, ...)
 			break;
 	}
 
-	buffer->readable = true;
+	MKMI_UnlockMutex(&buffer->lock);
 
 	va_end(ap);
 
@@ -73,9 +74,8 @@ uint64_t MKMI_BufferIO(MKMI_Buffer *buffer, MKMI_BufferOperation operation, ...)
 
 uint64_t MKMI_BufferDelete(MKMI_Buffer *buffer) {
 	if (buffer == NULL) return 0;
-	if (!buffer->readable) return 0;
 
-	buffer->readable = false;
+	MKMI_LockMutex(&buffer->lock);
 
 	switch(buffer->type) {
 		case COMMUNICATION_MODULE_KERNEL:
@@ -90,6 +90,4 @@ uint64_t MKMI_BufferDelete(MKMI_Buffer *buffer) {
 	}
 
 	return 0;
-}
-
 }
