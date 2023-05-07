@@ -28,17 +28,18 @@ struct MKMI_Module {
 	/* Module version: current version */
 	MKMI_VersionInfo Version;
 	
+	void (*PrintK)(char* format, ...);
+	MKMI_Module *(*GetModule)(MKMI_ModuleID *id);
+
+	MKMI_Buffer *(*BufferCreate)(uint64_t code, MKMI_BufferType type, size_t size);
+	uint64_t (*BufferIO)(MKMI_Buffer *buffer, MKMI_BufferOperation operation, ...);
+	uint64_t (*BufferDelete)(MKMI_Buffer *buffer);
+
 	/* Optional data */
 	/* Versioning info: if not included, any version is accepted */
 	MKMI_VersionInfo MinimumVersion; /* Minimum MKMI version accepted */
 	MKMI_VersionInfo MaximumVersion; /* Maximum MKMI version accepted */
 };
-
-uint64_t MKMI_CallKernelFunction();
-uint64_t MKMI_CallUserFunction();
-
-uint64_t MKMI_RegisterModule(MKMI_Module *module);
-uint64_t MKMI_UnregisterModule(MKMI_ModuleID *id);
 
 #ifdef __cplusplus
 }

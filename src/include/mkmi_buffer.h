@@ -54,10 +54,6 @@ struct MKMI_Buffer {
 	size_t size;
 }__attribute__((packed));
 
-MKMI_Buffer *MKMI_BufferCreate(uint64_t code, MKMI_BufferType type, size_t size);
-uint64_t MKMI_BufferIO(MKMI_Buffer *buffer, MKMI_BufferOperation operation, ...);
-uint64_t MKMI_BufferDelete(MKMI_Buffer *buffer);
-
 #ifdef __cplusplus
 }
 #endif
