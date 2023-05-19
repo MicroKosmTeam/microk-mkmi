@@ -1,13 +1,20 @@
 #include <mkmi_log.h>
 #include <stdint.h>
-#include <stdarg.h>
+#include <mkmi_syscall.h>
 
 void MKMI_Printf(char *format, ...) {
-	uint64_t *KRNSYMTABLE = 0xffffffffffff0000;
-	void (*test)(char *format, va_list ap) = KRNSYMTABLE[0];
+        va_list ap;
+        va_start(ap, format);
 
-	va_list ap;
-	va_start(ap, format);
-	test(format, ap);
-	va_end(ap);
+	MKMI_VPrintf(format, ap);
+
+        va_end(ap);
+}
+
+void PrintString(char *string) {
+	Syscall(1, string, 0, 0, 0, 0);
+}
+
+void MKMI_VPrintf(char *format, va_list ap) {
+       PrintString(format);
 }

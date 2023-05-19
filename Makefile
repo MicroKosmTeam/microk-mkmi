@@ -1,11 +1,6 @@
-ARCH = x86_64
+include ../Makefile.inc
 
 SRCDIR = src
-
-CC = $(ARCH)-elf-gcc
-CPP = $(ARCH)-elf-g++
-LD = $(ARCH)-elf-ld
-AR = $(ARCH)-elf-ar
 
 CFLAGS = -ffreestanding \
 	 -fvisibility=protected \
@@ -45,12 +40,21 @@ LDFLAGS = -shared \
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 
 CPPSRC = $(call rwildcard,$(SRCDIR),*.cpp)
+ASMSRC = $(call rwildcard,$(SRCDIR),*.asm)
 OBJS = $(patsubst $(SRCDIR)/%.cpp, $(SRCDIR)/%.o, $(CPPSRC))
+OBJS += $(patsubst $(SRCDIR)/%.asm, $(SRCDIR)/%.o, $(ASMSRC))
+
+.PHONY: dynamic static mkmi
 
 $(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	@ mkdir -p $(@D)
 	@ echo !==== COMPILING MKMI $^ && \
 	$(CPP) $(CFLAGS) -c $^ -o $@
+
+$(SRCDIR)/%.o: $(SRCDIR)/%.asm
+	@ mkdir -p $(@D)
+	@ echo !==== COMPILING MKMI $^ && \
+	$(ASM) $(ASMFLAGS) $^ -o $@
 
 dynamic: $(OBJS)
 	@ echo !==== LINKING
@@ -59,6 +63,9 @@ dynamic: $(OBJS)
 static: $(OBJS)
 	@ echo !==== ARCHIVING
 	$(AR) rcs libmkmi.a $(OBJS)
+
+mkmi: dynamic static
+	@ echo !==== MKMI COMPILED
 
 clean:
 	@rm $(OBJS)
