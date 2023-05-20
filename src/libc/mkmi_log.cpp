@@ -12,7 +12,7 @@ void MKMI_Printf(char *format, ...) {
 }
 
 void PrintString(char *string) {
-	Syscall(1, string, 0, 0, 0, 0);
+	Syscall(SYSCALL_DEBUG_PRINTK, string, 0, 0, 0, 0);
 }
 
 void MKMI_VPrintf(char *format, va_list ap) {

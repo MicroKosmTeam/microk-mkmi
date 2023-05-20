@@ -9,6 +9,7 @@ CFLAGS = -ffreestanding \
 	 -fno-builtin-g       \
 	 -fno-stack-check     \
 	 -I $(SRCDIR)/include    \
+	 -I ../$(KERNDIR)/$(SRCDIR)/include \
 	 -m64                 \
 	 -mabi=sysv           \
 	 -mno-80387           \

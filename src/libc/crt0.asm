@@ -2,31 +2,56 @@
 
 section .text
 
-extern _init
+extern __mkmi_init
+extern _return
+
 extern ModuleInit
 
 global _start
 _start:
-	; We need those in a moment when we call main.
-	push rsi
-	push rdi
+	; We need those in a moment when we call ModuleInit
+	push rdi ; argc
+	push rsi ; argv
 
-	; Prepare signals, memory allocation, stdio and such.
-	;call initialize_standard_library
-
-	; Run the global constructors.
-	;call _init
+	; Initialize the MKMI library
+	call __mkmi_init
 
 	; Restore argc and argv.
-	pop rdi
 	pop rsi
+	pop rdi
 
-	; Run main
-	call ModuleInit 
+	; Run module initialization code 
+	call ModuleInit
 
-	; Terminate the process with the exit code.
-	mov rdi, rax
-	call exit
+	; Return control to the kernel
+	mov rdi, rax ; Exit code
+	mov rsi, rsp ; Current stack
+	call _return
 
-exit:
-	jmp $
+	jmp $ ; Just in case
+
+
+extern __mkmi_deinit
+extern _exit
+
+extern ModuleDeinit
+
+global _end
+_end:
+	; Run module deinitialization code
+	call ModuleDeinit
+	
+	; Make sure to save the exit code
+	push rax
+	
+	; Deinit the MKMI library
+	call __mkmi_deinit
+
+	pop rax
+
+	; Destroy the current process
+	mov rdi, rax ; Exit code
+	mov rsi, rsp ; Current stack
+	call _exit
+
+	jmp $ ; Just in case
