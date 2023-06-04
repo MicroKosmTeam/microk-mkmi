@@ -25,7 +25,7 @@ CFLAGS = -ffreestanding \
 	 -fno-exceptions      \
 	 -fno-lto             \
 	 -fno-pie             \
-	 -fPIC \
+	 -fPIC                \
 	 -march=x86-64        \
 	 -ggdb
 

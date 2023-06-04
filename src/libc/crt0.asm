@@ -5,7 +5,7 @@ section .text
 extern __mkmi_init
 extern _return
 
-extern ModuleInit
+extern OnInit
 
 global _start
 _start:
@@ -21,7 +21,7 @@ _start:
 	pop rdi
 
 	; Run module initialization code 
-	call ModuleInit
+	call OnInit 
 
 	; Return control to the kernel
 	mov rdi, rax ; Exit code
@@ -34,12 +34,12 @@ _start:
 extern __mkmi_deinit
 extern _exit
 
-extern ModuleDeinit
+extern OnExit 
 
 global _end
 _end:
 	; Run module deinitialization code
-	call ModuleDeinit
+	call OnExit 
 	
 	; Make sure to save the exit code
 	push rax

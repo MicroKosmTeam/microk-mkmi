@@ -22,13 +22,15 @@ struct MKMI_ModuleID {
 };
 
 struct MKMI_Module {
-	/* Mandatory data */
 	/* Module ID: basic module information */
 	MKMI_ModuleID ID;
 	/* Module version: current version */
 	MKMI_VersionInfo Version;
 	
-	/* Optional data */
+	/* All functions: */
+	size_t (*OnInterrupt)();
+	size_t (*OnMessage)();
+
 	/* Versioning info: if not included, any version is accepted */
 	MKMI_VersionInfo MinimumVersion; /* Minimum MKMI version accepted */
 	MKMI_VersionInfo MaximumVersion; /* Maximum MKMI version accepted */
