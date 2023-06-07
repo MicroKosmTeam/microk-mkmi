@@ -19,8 +19,6 @@ void PrintString(char *string) {
 
 void MKMI_VPrintf(char *format, va_list ap) {
         char message[65536];
-	
-	Memset(message, '\0', 65536);
 
 	char *position = message;
         char *ptr = format;
@@ -45,7 +43,7 @@ void MKMI_VPrintf(char *format, va_list ap) {
                                         break;
                                 case 'x': {
 					char buffer[256];
-                                        itoa(buffer, 'd', va_arg(ap, long long int));
+                                        itoa(buffer, 'x', va_arg(ap, long long int));
 					size_t len = strlen(buffer);
 
 					for (int i = 0; i < len; ++i) *position++ = buffer[i];
