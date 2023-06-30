@@ -13,12 +13,21 @@ void MKMI_Printf(char *format, ...) {
         va_end(ap);
 }
 
+void PrintChar(char ch) {
+	char str[2];
+	str[0] = ch;
+	str[1] = '\0';
+
+	Syscall(SYSCALL_DEBUG_PRINTK, str, 0, 0, 0, 0, 0);
+}
+
 void PrintString(char *string) {
-	Syscall(SYSCALL_DEBUG_PRINTK, string, 0, 0, 0, 0);
+	Syscall(SYSCALL_DEBUG_PRINTK, string, 0, 0, 0, 0, 0);
 }
 
 void MKMI_VPrintf(char *format, va_list ap) {
-        char message[65536];
+        char message[1024];
+	Memset(message, '\0', 1024);
 
 	char *position = message;
         char *ptr = format;
@@ -29,38 +38,35 @@ void MKMI_VPrintf(char *format, va_list ap) {
                         switch (*ptr++) {
                                 case 's': {
 					char *str = va_arg(ap, uint8_t*);
-					while(*position++ = *str++);
+
+					PrintString(str);
 					}
                                         break;
                                 case 'u':
                                 case 'd': {
 					char buffer[256];
                                         itoa(buffer, 'd', va_arg(ap, long long int));
-					size_t len = strlen(buffer);
 
-					for (int i = 0; i < len; ++i) *position++ = buffer[i];
+					PrintString(buffer);
 					}
                                         break;
                                 case 'x': {
 					char buffer[256];
                                         itoa(buffer, 'x', va_arg(ap, long long int));
-					size_t len = strlen(buffer);
 
-					for (int i = 0; i < len; ++i) *position++ = buffer[i];
+					PrintString(buffer);
 					}
                                         break;
                                 case '%':
-                                        *position++ = '%';
+					PrintString("%%");
                                         break;
                                 case 'c':
-                                        *position++ = va_arg(ap, uint8_t);
+                                        PrintChar(va_arg(ap, char));
                                         break;
 
                         }
                 } else {
-                        *position++ = *ptr++;
+			PrintChar(*ptr++);
                 }
         }
-
-	PrintString(message);
 }

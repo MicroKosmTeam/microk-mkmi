@@ -1,12 +1,17 @@
 #include <mkmi_memory.h>
 #include <mkmi_syscall.h>
 
-void *VMalloc(uintptr_t base, size_t length, size_t flags) {
-	Syscall(SYSCALL_MEMORY_VMALLOC, base, length, flags, 0, 0);
+void *VMAlloc(uintptr_t base, size_t length, size_t flags) {
+	Syscall(SYSCALL_MEMORY_VMALLOC, base, length, flags, 0, 0, 0);
 
 	return base;
 }
 
+void *VMFree(uintptr_t base, size_t length) {
+	Syscall(SYSCALL_MEMORY_VMFREE, base, length, 0, 0, 0, 0);
+
+	return base;
+}
 
 
 void __StandardMemcpy(void *dest, void *src, size_t n) {

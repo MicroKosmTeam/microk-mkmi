@@ -13,7 +13,11 @@ typedef struct {
 	size_t MemoryBuffers;
 }__attribute((packed)) MemoryInfo;
 
-void *VMalloc(uintptr_t base, size_t length, size_t flags);
+void *VMAlloc(uintptr_t base, size_t length, size_t flags);
+void *VMFree(uintptr_t base, size_t length);
+
+void *Malloc(size_t size);
+void Free(void *address);
 
 void Memcpy(void *dest, void *src, size_t n);
 void Memset(void *start, uint8_t value, uint64_t num);

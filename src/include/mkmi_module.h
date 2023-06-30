@@ -6,8 +6,8 @@
 
 #pragma once
 #include <stdint.h>
+#include <stddef.h>
 #include <mkmi_version.h>
-#include <mkmi_buffer.h>
 
 #ifdef __cplusplus
 extern "C" {
