@@ -4,9 +4,14 @@
 #include <mkmi_log.h>
 #include <mkmi_heap.h>
 #include <mkmi_memory.h>
+#include <mkmi_syscall.h>
+
+extern uint32_t VendorID;
+extern uint32_t ProductID;
 
 extern "C" void __mkmi_init() {
 	MKMI_Printf("Initializing MKMI...\r\n");
+	Syscall(SYSCALL_MODULE_REGISTER, VendorID, ProductID, 0, 0, 0, 0);
 
 	MKMI_Printf("Initializing the heap...\r\n");
 
@@ -22,6 +27,7 @@ extern "C" void __mkmi_init() {
 
 extern "C" void __mkmi_deinit() {
 	MKMI_Printf("Deinitializing MKMI...\r\n");
+	Syscall(SYSCALL_MODULE_UNREGISTER, VendorID, ProductID, 0, 0, 0, 0);
 
 	MKMI_Printf("Deinitializing the heap...\r\n");
 	MKMI_DeinitializeHeap();

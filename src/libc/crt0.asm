@@ -3,9 +3,13 @@
 section .text
 
 extern __mkmi_init
+extern __mkmi_deinit
+
+extern _exit
 extern _return
 
 extern OnInit
+extern OnExit 
 
 global _start
 _start:
@@ -28,13 +32,7 @@ _start:
 	mov rsi, rsp ; Current stack
 	call _return
 
-	jmp $ ; Just in case
-
-
-extern __mkmi_deinit
-extern _exit
-
-extern OnExit 
+	int 14 ; Just in case
 
 global _end
 _end:
@@ -54,4 +52,4 @@ _end:
 	mov rsi, rsp ; Current stack
 	call _exit
 
-	jmp $ ; Just in case
+	int 14 ; Just in case
