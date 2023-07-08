@@ -27,7 +27,7 @@ extern "C" void __mkmi_init() {
 
 extern "C" void __mkmi_deinit() {
 	MKMI_Printf("Deinitializing MKMI...\r\n");
-	Syscall(SYSCALL_MODULE_UNREGISTER, VendorID, ProductID, 0, 0, 0, 0);
+	Syscall(SYSCALL_MODULE_UNREGISTER, 0, 0, 0, 0, 0, 0);
 
 	MKMI_Printf("Deinitializing the heap...\r\n");
 	MKMI_DeinitializeHeap();
