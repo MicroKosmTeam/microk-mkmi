@@ -13,6 +13,16 @@ void *VMFree(uintptr_t base, size_t length) {
 	return base;
 }
 
+void *VMMap(uintptr_t src, uintptr_t dest, size_t size, size_t flags) {
+	Syscall(SYSCALL_MEMORY_MMAP, src, dest, size, flags, 0, 0);
+
+	return dest;
+}
+
+void VMUnmap(uintptr_t vaddr, size_t size) {
+	return Syscall(SYSCALL_MEMORY_UNMAP, vaddr, size, 0, 0, 0, 0);
+}
+
 
 void __StandardMemcpy(void *dest, void *src, size_t n) {
 	char *csrc = (char *)src;
