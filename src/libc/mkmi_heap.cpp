@@ -73,6 +73,22 @@ void MKMI_DeinitializeHeap() {
 
 #define MAX_TRIES 4
 
+size_t GetBlockSize(void *address) {
+	HeapSegHeader *currSeg = (HeapSegHeader*)heapStart;
+
+	while(true) {
+		if((uintptr_t)address == (uintptr_t)currSeg) {
+			if (!currSeg->free) return currSeg->length;
+			else return 0;
+		}
+
+		if (currSeg->next == NULL) break;
+		currSeg = currSeg->next;
+	}
+
+	return 0;
+}
+
 void *Malloc(size_t size) {
         if (size % 0x10 > 0){ // Not multiple of 0x10
                 size -= (size % 0x10);

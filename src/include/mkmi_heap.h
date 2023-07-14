@@ -22,6 +22,7 @@ void MKMI_DeinitializeHeap();
 void MKMI_ExpandHeap(size_t lenght);
 
 void *Malloc(size_t size);
+size_t GetBlockSize(void *address);
 void Free(void *address);
 
 #ifdef __cplusplus

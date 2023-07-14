@@ -1,5 +1,30 @@
 #include <mkmi_string.h>
 
+char *strcpy(char *strDest, const char *strSrc){
+        if(strDest==NULL || strSrc==NULL) return NULL;
+        char *temp = strDest;
+        while(*strDest++ = *strSrc++);
+        return temp;
+}
+
+int strcmp(const char *s1, const char *s2) {
+        const unsigned char *p1 = (const unsigned char *)s1;
+        const unsigned char *p2 = (const unsigned char *)s2;
+
+        while (*p1 != '\0') {
+                if (*p2 == '\0') return  1;
+                if (*p2 > *p1)   return -1;
+                if (*p1 > *p2)   return  1;
+
+                p1++;
+                p2++;
+        }
+
+        if (*p2 != '\0') return -1;
+
+        return 0;
+}
+
 size_t strlen(const char *str) {
         const char *s;
         for (s = str; *s; ++s);

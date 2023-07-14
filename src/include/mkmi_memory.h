@@ -30,11 +30,19 @@ inline void *operator new[](size_t size) {
 	return Malloc(size);
 }
 
-inline void operator delete(void* p, ...) {
+inline void operator delete(void* p) {
 	return Free(p);
 }
 
-inline void operator delete[](void* p, ...) {
+inline void operator delete[](void* p) {
+	return Free(p);
+}
+
+inline void operator delete(void* p, size_t unused) {
+	return Free(p);
+}
+
+inline void operator delete[](void* p, size_t unused) {
 	return Free(p);
 }
 

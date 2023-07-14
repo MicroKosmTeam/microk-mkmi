@@ -17,7 +17,7 @@ extern "C" void __mkmi_init() {
 
 	/* 256GB as base, 32MB in size. Should be good for now */
 	const uintptr_t heapBase = (0x100000000);
-	const size_t heapLength = (32 * 1024 * 1024);
+	const size_t heapLength = (2 * 1024 * 1024);
 	MKMI_InitializeHeap(heapBase, heapLength);
 
 	MKMI_Printf("Initialization complete.\r\n");
