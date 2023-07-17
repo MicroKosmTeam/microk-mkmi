@@ -10,6 +10,8 @@ extern _return
 
 extern OnInit
 extern OnExit 
+extern OnMessage
+extern OnSignal
 
 global _start
 _start:
@@ -34,6 +36,27 @@ _start:
 
 	int 14 ; Just in case
 
+global __message_handler
+__message_handler:
+	call OnMessage 
+
+	; Return control to the kernel
+	mov rdi, rax ; Exit code
+	mov rsi, rsp ; Current stack
+	call _return
+
+	int 14 ; Just in case
+
+global __signal_handler
+__signal_handler:
+	call OnSignal
+
+	; Return control to the kernel
+	mov rdi, rax ; Exit code
+	mov rsi, rsp ; Current stack
+	call _return
+
+	int 14 ; Just in case
 global _end
 _end:
 	; Run module deinitialization code
