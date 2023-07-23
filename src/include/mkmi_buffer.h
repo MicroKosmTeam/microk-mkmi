@@ -14,13 +14,6 @@
 extern "C" {
 #endif
 
-struct MKMI_Buffer {
-	uintptr_t Address;
-	bool Lock;
-	size_t Type;
-	size_t Size;
-}__attribute__((packed));
-
 #ifdef __cplusplus
 }
 #endif

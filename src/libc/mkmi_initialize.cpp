@@ -21,8 +21,6 @@ extern "C" void __mkmi_init() {
 	MKMI_InitializeHeap(heapBase, heapLength);
 
 	MKMI_Printf("Initialization complete.\r\n");
-
-	MKMI_Printf("                                                                  \r");
 }
 
 extern "C" void __mkmi_deinit() {
