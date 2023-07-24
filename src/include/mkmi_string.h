@@ -6,10 +6,15 @@
 extern "C" {
 #endif
 
-char *strcpy(char *strDest, const char *strSrc);
-int strcmp(const char *s1, const char *s2);
-size_t strlen(const char *str);
-void itoa(char *buf, char base, long long int num);
+bool IsDelim(char c, char *delim);
+
+char *Strcpy(char *strDest, const char *strSrc);
+int Strcmp(const char *s1, const char *s2);
+size_t Strlen(const char *str);
+char *Strtok(char *s, char *delim);
+
+void Itoa(char *buf, char base, long long int num);
+intmax_t Atoi(char *str);
 
 #ifdef __cplusplus
 }

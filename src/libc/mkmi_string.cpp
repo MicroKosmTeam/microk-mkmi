@@ -1,13 +1,23 @@
 #include <mkmi_string.h>
 
-char *strcpy(char *strDest, const char *strSrc){
+bool IsDelim(char c, char *delim) {
+	while(*delim != '\0') {
+		if(c == *delim)
+			return true;
+		delim++;
+	}
+
+	return false;
+}
+
+char *Strcpy(char *strDest, const char *strSrc){
         if(strDest==NULL || strSrc==NULL) return NULL;
         char *temp = strDest;
         while(*strDest++ = *strSrc++);
         return temp;
 }
 
-int strcmp(const char *s1, const char *s2) {
+int Strcmp(const char *s1, const char *s2) {
         const unsigned char *p1 = (const unsigned char *)s1;
         const unsigned char *p2 = (const unsigned char *)s2;
 
@@ -25,13 +35,58 @@ int strcmp(const char *s1, const char *s2) {
         return 0;
 }
 
-size_t strlen(const char *str) {
+size_t Strlen(const char *str) {
         const char *s;
         for (s = str; *s; ++s);
         return (s - str);
 }
 
-void itoa(char *buf, char base, long long int num) {
+char *Strtok(char *s, char *delim) {
+	static char *p; // start of the next search
+	if(!s) s = p;
+	if(!s) return NULL;
+
+	// handle beginning of the string containing delims
+	while(true) {
+		if(IsDelim(*s, delim)) {
+			s++;
+			continue;
+		}
+
+		if(*s == '\0') {
+			return NULL; // we've reached the end of the string
+		}
+
+		// now, we've hit a regular character. Let's exit the
+		// loop, and we'd need to give the caller a string
+		// that starts here.
+		//
+		break;
+	}
+
+
+	char *ret = s;
+
+	while(true) {
+		if(*s == '\0') {
+			p = s; // next exec will return NULL
+			return ret;
+		}
+
+		if(IsDelim(*s, delim)) {
+			*s = '\0';
+			p = s + 1;
+			return ret;
+		}
+
+		s++;
+	}
+}
+
+
+
+
+void Itoa(char *buf, char base, long long int num) {
 	char *p = buf;
 	char *p1, *p2;
 	size_t ud = num;
@@ -65,4 +120,20 @@ void itoa(char *buf, char base, long long int num) {
 		p1++;
 		p2--;
 	}
+}
+
+intmax_t Atoi(char *str) {
+        long long int res = 0;
+
+        /* Iterate through all characters
+           of input string and update result
+           take ASCII character of corresponding digit and
+           subtract the code from '0' to get numerical
+           value and multiply res by 10 to shuffle
+           digits left to update running total */
+        for (int i = 0; str[i] != '\0'; ++i)
+                res = res * 10 + str[i] - '0';
+
+        // return result.
+        return res;
 }

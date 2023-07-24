@@ -45,14 +45,14 @@ void MKMI_VPrintf(char *format, va_list ap) {
                                 case 'u':
                                 case 'd': {
 					char buffer[256];
-                                        itoa(buffer, 'd', va_arg(ap, long long int));
+                                        Itoa(buffer, 'd', va_arg(ap, long long int));
 
 					PrintString(buffer);
 					}
                                         break;
                                 case 'x': {
 					char buffer[256];
-                                        itoa(buffer, 'x', va_arg(ap, long long int));
+                                        Itoa(buffer, 'x', va_arg(ap, long long int));
 
 					PrintString(buffer);
 					}
