@@ -13,8 +13,7 @@ extern "C" void _exit(size_t exitCode) {
 	Syscall(SYSCALL_PROC_EXIT, exitCode, stack, 0, 0, 0, 0);
 }
 
-/* This is not like the _exit function. Its objective is to return to the kernel
- * after a module is initialized. We don't expect to return here after the switch.
+/* This is not like the _exit function. It is a simple yeild function.
  */
 extern "C" void _return(size_t returnCode) {
 	uintptr_t stack;

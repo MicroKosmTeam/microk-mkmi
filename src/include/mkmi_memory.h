@@ -17,10 +17,10 @@ void *VMAlloc(uintptr_t base, size_t length, size_t flags);
 void *VMFree(uintptr_t base, size_t length);
 
 void *VMMap(uintptr_t src, uintptr_t dest, size_t size, size_t flags);
-void VMUnmap(uintptr_t vaddr, size_t size);
+void *VMUnmap(uintptr_t vaddr, size_t size);
 
 void *Malloc(size_t size);
-void Free(void *address);
+void *Free(void *address);
 
 inline void *operator new(size_t size) {
 	return Malloc(size);
@@ -31,24 +31,38 @@ inline void *operator new[](size_t size) {
 }
 
 inline void operator delete(void* p) {
-	return Free(p);
+	Free(p);
 }
 
 inline void operator delete[](void* p) {
-	return Free(p);
+	Free(p);
 }
 
 inline void operator delete(void* p, size_t unused) {
-	return Free(p);
+	Free(p);
 }
 
 inline void operator delete[](void* p, size_t unused) {
-	return Free(p);
+	Free(p);
 }
 
-void Memcpy(void *dest, void *src, size_t n);
-void Memset(void *start, uint8_t value, uint64_t num);
+void *Memcpy(void *dest, void *src, size_t n);
+void *Memset(void *start, uint8_t value, uint64_t num);
 int Memcmp(const void* buf1, const void* buf2, size_t count);
+
+/* The compiler might indiscriminately call those functions,
+ * expecting their original names. This fixes the issue. */
+inline void *memcpy(void *dest, void *src, size_t n) {
+	return Memcpy(dest, src, n);
+}
+
+inline void *memset(void *start, uint8_t value, uint64_t num) {
+	return Memset(start, value, num);
+}
+
+inline int memcmp(const void* buf1, const void* buf2, size_t count) {
+	return Memcmp(buf1, buf2, count);
+}
 
 #ifdef __cplusplus
 }

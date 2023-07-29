@@ -120,12 +120,14 @@ void *Malloc(size_t size) {
 	}
 }
 
-void Free(void *address) {
+void *Free(void *address) {
         HeapSegHeader *segment = (HeapSegHeader*)address - 1;
 	if(segment->free) return;
         segment->free = true;
         segment->CombineForward();
         segment->CombineBackward();
+
+	return address;
 }
 
 void MKMI_ExpandHeap(size_t length) {
