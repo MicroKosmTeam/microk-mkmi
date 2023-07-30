@@ -24,8 +24,7 @@ void MKMI_MessageHandler() {
 	MKMI_Printf("Message at        0x%x\r\n"
 			" Sender Vendor ID:  %x\r\n"
 			" Sender Product ID: %x\r\n"
-			" Message Size:      %d\r\n"
-			" Data:            0x%x\r\n",
+			" Message Size:      %d\r\n",
 			msg,
 			msg->SenderVendorID,
 			msg->SenderProductID,
