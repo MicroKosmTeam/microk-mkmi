@@ -1,6 +1,5 @@
 #include <mkmi_message.h>
 
-
 #include <mkmi.h>
 
 static MKMI_MessageCallback callback;
@@ -31,11 +30,11 @@ void MKMI_MessageHandler() {
 			msg->MessageSize);
 
 	if(!callback) _return(128);
-	callback(msg, data);
+	int result = callback(msg, data);
 
 	CleanUpIncomingMessage(msg);
 
-	_return(0);
+	_return(result);
 
 	__builtin_unreachable();
 }
@@ -43,3 +42,10 @@ void MKMI_MessageHandler() {
 void SetMessageHandlerCallback(MKMI_MessageCallback function) {
 	callback = function;
 }
+
+int SendDirectMessage(uint32_t vendorID, uint32_t productID, uint8_t *data, size_t length) {
+	Syscall(SYSCALL_MODULE_MESSAGE_SEND, vendorID, productID, data, length, 0 ,0);
+
+	return 0;
+}
+

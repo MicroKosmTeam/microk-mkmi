@@ -66,3 +66,14 @@ int Memcmp(const void* buf1, const void* buf2, size_t count) {
 	return __StandardMemcmp(buf1, buf2, count);
 }
 
+void *memcpy(void *dest, void *src, size_t n) {
+	return Memcpy(dest, src, n);
+}
+
+void *memset(void *start, uint8_t value, uint64_t num) {
+	return Memset(start, value, num);
+}
+
+int memcmp(const void* buf1, const void* buf2, size_t count) {
+	return Memcmp(buf1, buf2, count);
+}
