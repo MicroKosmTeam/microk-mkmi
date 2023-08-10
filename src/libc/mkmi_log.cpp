@@ -13,7 +13,7 @@ void MKMI_Printf(char *format, ...) {
         va_end(ap);
 }
 
-void PrintChar(char ch) {
+static void PrintChar(char ch) {
 	char str[2];
 	str[0] = ch;
 	str[1] = '\0';
@@ -21,7 +21,7 @@ void PrintChar(char ch) {
 	Syscall(SYSCALL_DEBUG_PRINTK, str, 0, 0, 0, 0, 0);
 }
 
-void PrintString(char *string) {
+static void PrintString(char *string) {
 	Syscall(SYSCALL_DEBUG_PRINTK, string, 0, 0, 0, 0, 0);
 }
 
