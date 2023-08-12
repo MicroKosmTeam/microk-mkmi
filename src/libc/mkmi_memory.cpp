@@ -1,6 +1,15 @@
 #include <mkmi_memory.h>
 #include <mkmi_syscall.h>
 
+void *PMAlloc(size_t length) {
+	void *addr;
+	
+	Syscall(SYSCALL_MEMORY_PALLOC, &addr, length, 0, 0, 0, 0);
+	if(addr != NULL) Syscall(SYSCALL_MEMORY_MMAP, addr, addr, length, 0, 0, 0);
+	
+	return addr;
+}
+
 void *VMAlloc(uintptr_t base, size_t length, size_t flags) {
 	Syscall(SYSCALL_MEMORY_VMALLOC, base, length, flags, 0, 0, 0);
 
@@ -57,7 +66,7 @@ void *Memcpy(void *dest, void *src, size_t n) {
 }
 
 void *Memset(void *start, uint8_t value, uint64_t num) {
-	__StandardMemcmp(start, value, num);
+	__StandardMemset(start, value, num);
 
 	return start;
 }

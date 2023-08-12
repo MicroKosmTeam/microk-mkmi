@@ -13,6 +13,8 @@ typedef struct {
 	size_t MemoryBuffers;
 }__attribute((packed)) MemoryInfo;
 
+void *PMAlloc(size_t length);
+
 void *VMAlloc(uintptr_t base, size_t length, size_t flags);
 void *VMFree(uintptr_t base, size_t length);
 
