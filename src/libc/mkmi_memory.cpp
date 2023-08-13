@@ -5,7 +5,6 @@ void *PMAlloc(size_t length) {
 	void *addr;
 	
 	Syscall(SYSCALL_MEMORY_PALLOC, &addr, length, 0, 0, 0, 0);
-	if(addr != NULL) Syscall(SYSCALL_MEMORY_MMAP, addr, addr, length, 0, 0, 0);
 	
 	return addr;
 }
@@ -85,4 +84,16 @@ void *memset(void *start, uint8_t value, uint64_t num) {
 
 int memcmp(const void* buf1, const void* buf2, size_t count) {
 	return Memcmp(buf1, buf2, count);
+}
+
+size_t InPort(uintptr_t port, uint8_t size) {
+	size_t result = -1;
+
+	Syscall(SYSCALL_MEMORY_INOUT, port, false, NULL, &result, size, 0);
+
+	return result;
+}
+
+void OutPort(uintptr_t port, size_t data, uint8_t size) {
+	Syscall(SYSCALL_MEMORY_INOUT, port, true, data, NULL, size, 0);
 }

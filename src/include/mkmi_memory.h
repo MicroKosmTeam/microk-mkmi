@@ -24,6 +24,9 @@ void *VMUnmap(uintptr_t vaddr, size_t size);
 void *Malloc(size_t size);
 void *Free(void *address);
 
+size_t InPort(uintptr_t port, uint8_t size);
+void OutPort(uintptr_t port, size_t data, uint8_t size);
+
 inline void *operator new(size_t size) {
 	return Malloc(size);
 }
