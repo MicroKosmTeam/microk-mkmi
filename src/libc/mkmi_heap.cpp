@@ -89,6 +89,14 @@ size_t GetBlockSize(void *address) {
 	return 0;
 }
 
+#include <mkmi.h>
+/* This heap has to replaced ASAP.
+   Weird behavior, incoherency and, most of all, why the hell is this needed */
+void MallocDebug(void *addr, size_t size) {
+	Syscall(0, 0, 0, 0, 0, 0, 0);
+	//MKMI_Printf("!!!! Malloc: 0x%x %d !!!!\r\n", addr, size);
+}
+
 void *Malloc(size_t size) {
         if (size % 0x10 > 0){ // Not multiple of 0x10
                 size -= (size % 0x10);
@@ -103,12 +111,18 @@ void *Malloc(size_t size) {
 		while(true) {
 			if (currSeg-> free) {
 				if (currSeg->length > size) {
+					void *addr = (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
 					currSeg->Split(size);
 					currSeg->free = false;
-					return (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
+
+					MallocDebug(addr, size);
+					return addr;
 				} else if (currSeg->length == size) {
+					void *addr = (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
 					currSeg->free = false;
-					return (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
+
+					MallocDebug(addr, size);
+					return addr;
 				}
 			}
 
@@ -131,6 +145,9 @@ void *Free(void *address) {
 }
 
 void MKMI_ExpandHeap(size_t length) {
+	MKMI_Printf("!!!! Expand Head !!!!\r\n");
+	while(true);
+
         if (length % 0x1000) { // We can't allocate less that a page
                 length -= length % 0x1000;
                 length += 0x1000;
