@@ -93,7 +93,7 @@ size_t GetBlockSize(void *address) {
 /* This heap has to replaced ASAP.
    Weird behavior, incoherency and, most of all, why the hell is this needed */
 void MallocDebug(void *addr, size_t size) {
-	Syscall(0, 0, 0, 0, 0, 0, 0);
+	Syscall(0, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69);
 	//MKMI_Printf("!!!! Malloc: 0x%x %d !!!!\r\n", addr, size);
 }
 
