@@ -26,6 +26,7 @@ inline size_t __x64_syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t 
 		     "mov %5, %%r9\n\t"
 		     "mov %6, %%r10\n\t"
 		     "syscall\n\t"
+		     "mov %%rax, %0\n\t"
 		     :
 		     : "r"(syscallNum), "r"(arg1), "r"(arg2), "r"(arg3), "r"(arg4), "r"(arg5), "r"(arg6)
 		     : "memory", "cc", "rax", "rdi", "rsi", "rdx", "r8", "r9", "r10");

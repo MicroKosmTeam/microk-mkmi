@@ -44,7 +44,7 @@ void SetMessageHandlerCallback(MKMI_MessageCallback function) {
 }
 
 int SendDirectMessage(uint32_t vendorID, uint32_t productID, uint8_t *data, size_t length) {
-	Syscall(SYSCALL_MODULE_MESSAGE_SEND, vendorID, productID, data, length, 0 ,0);
+	Syscall(SYSCALL_MODULE_MESSAGE_SEND, vendorID, productID, data, length, 0, 0);
 
 	return 0;
 }
