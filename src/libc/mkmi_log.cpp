@@ -1,8 +1,5 @@
 #include <stdint.h>
-#include <mkmi_log.h>
-#include <mkmi_memory.h>
-#include <mkmi_string.h>
-#include <mkmi_syscall.h>
+#include <mkmi.h>
 
 void MKMI_Printf(char *format, ...) {
         va_list ap;

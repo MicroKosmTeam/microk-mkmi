@@ -1,5 +1,3 @@
-#include <mkmi_message.h>
-
 #include <mkmi.h>
 
 static MKMI_MessageCallback callback;
