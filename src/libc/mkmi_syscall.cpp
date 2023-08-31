@@ -1,4 +1,4 @@
-#include <mkmi.h>
+#include <mkmi_syscall.h>
 
 inline size_t __x64_int_syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t arg3, size_t arg4, size_t arg5, size_t arg6) {
 	asm volatile("mov %0, %%rax\n\t"

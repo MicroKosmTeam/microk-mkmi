@@ -1,4 +1,4 @@
-#include <mkmi.h>
+#include <mkmi_mutex.h>
 
 bool MKMI_TryLockMutex(bool *lock) {
 	if(__sync_bool_compare_and_swap(lock, false, true)) {

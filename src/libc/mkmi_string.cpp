@@ -1,4 +1,4 @@
-#include <mkmi.h>
+#include <mkmi_string.h>
 
 bool IsDelim(char c, char *delim) {
 	while(*delim != '\0') {

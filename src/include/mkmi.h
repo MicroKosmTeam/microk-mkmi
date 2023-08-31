@@ -1,39 +1,19 @@
-/* MKMI, a library intended for MicroKosm modules
- * Copyright (C) 2022-2023 Mutta Filippo
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+/*
+   File: include/mkmi/mkmi.h
 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General does return to userspacePublic License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * File: include/mkmi.h
- */
+   MicroK's module interface
+*/
 
 #pragma once
-
-#if !defined(_MKMI_MAIN_HEADER_)
-#define _MKMI_MAIN_HEADER_
-
-#include "mkmi_log.h"
-#include "mkmi_ptrs.h"
-#include "mkmi_exit.h"
-#include "mkmi_heap.h"
-#include "mkmi_mutex.h"
-#include "mkmi_memory.h"
-#include "mkmi_buffer.h"
-#include "mkmi_string.h"
-#include "mkmi_module.h"
-#include "mkmi_version.h"
-#include "mkmi_message.h"
-#include "mkmi_syscall.h"
-
-#endif
+#include <mkmi_buffer.h>
+#include <mkmi_module.h>
+#include <mkmi_version.h>
+#include <mkmi_mutex.h>
+#include <mkmi_exit.h>
+#include <mkmi_heap.h>
+#include <mkmi_log.h>
+#include <mkmi_memory.h>
+#include <mkmi_message.h>
+#include <mkmi_module.h>
+#include <mkmi_string.h>
+#include <mkmi_syscall.h>

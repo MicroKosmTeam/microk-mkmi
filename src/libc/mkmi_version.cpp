@@ -1,4 +1,4 @@
-#include <mkmi.h>
+#include <mkmi_version.h>
 
 extern "C" {
 

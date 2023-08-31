@@ -1,4 +1,5 @@
-#include <mkmi.h>
+#include <mkmi_exit.h>
+#include <mkmi_syscall.h>
 
 /* The objective of the exit function is to return to the kernel and
  * signal the process for deletion. This means the all of the allocated

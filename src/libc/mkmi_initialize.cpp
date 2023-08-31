@@ -1,7 +1,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#include <mkmi.h>
+#include <mkmi_log.h>
+#include <mkmi_heap.h>
+#include <mkmi_memory.h>
+#include <mkmi_syscall.h>
 
 extern uint32_t VendorID;
 extern uint32_t ProductID;

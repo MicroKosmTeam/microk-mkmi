@@ -1,4 +1,5 @@
-#include <mkmi.h>
+#include <mkmi_memory.h>
+#include <mkmi_syscall.h>
 
 void *PMAlloc(size_t length) {
 	void *addr;
@@ -32,24 +33,21 @@ void *VMUnmap(uintptr_t vaddr, size_t size) {
 	return vaddr;
 }
 
-extern "C" __attribute__((weak)) void *memcpy(void *dest, void *src, size_t n) {
+
+inline void __StandardMemcpy(void *dest, void *src, size_t n) {
 	char *csrc = (char *)src;
 	char *cdest = (char *)dest;
 
 	for (int i=0; i<n; i++) cdest[i] = csrc[i];
-
-	return cdest;
 }
 
-extern "C" __attribute__((weak)) void *memset(void *start, uint8_t value, uint64_t num) {
+inline void __StandardMemset(void *start, uint8_t value, uint64_t num) {
 	for (uint64_t i = 0; i < num; i++) {
 		*(uint8_t*)((uint64_t)start + i) = value;
 	}
-
-	return start;
 }
 
-extern "C" __attribute__((weak)) int memcmp(const void *buf1, const void *buf2, size_t count) {
+inline int __StandardMemcmp(const void* buf1, const void* buf2, size_t count) {
 	if(!count) return(0);
 
 	while(--count && *(char*)buf1 == *(char*)buf2 ) {
@@ -57,19 +55,35 @@ extern "C" __attribute__((weak)) int memcmp(const void *buf1, const void *buf2, 
 		buf2 = (char*)buf2 + 1;
 	}
 
-	return (*((unsigned char*)buf1) - *((unsigned char*)buf2));
+	return(*((unsigned char*)buf1) - *((unsigned char*)buf2));
 }
 
 void *Memcpy(void *dest, void *src, size_t n) {
-	return memcpy(dest, src, n);
+	__StandardMemcpy(dest, src, n);
+
+	return dest;
 }
 
 void *Memset(void *start, uint8_t value, uint64_t num) {
-	return memset(start, value, num);
+	__StandardMemset(start, value, num);
+
+	return start;
 }
 
 int Memcmp(const void* buf1, const void* buf2, size_t count) {
-	return memcmp(buf1, buf2, count);
+	return __StandardMemcmp(buf1, buf2, count);
+}
+
+void *memcpy(void *dest, void *src, size_t n) {
+	return Memcpy(dest, src, n);
+}
+
+void *memset(void *start, uint8_t value, uint64_t num) {
+	return Memset(start, value, num);
+}
+
+int memcmp(const void* buf1, const void* buf2, size_t count) {
+	return Memcmp(buf1, buf2, count);
 }
 
 size_t InPort(uintptr_t port, uint8_t size) {

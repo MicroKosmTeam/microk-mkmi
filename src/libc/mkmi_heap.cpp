@@ -1,129 +1,104 @@
-#include <mkmi.h>
+#include <mkmi_heap.h>
+#include <mkmi_memory.h>
 
-#define MAX_TRIES 4
+static bool initialized = false;
 
-/*
- * struct: HeapSegHeader 
- * Contains metadata and functions for each heap segment.
- * It's an internal structure, not meant for use by modules.
- *
- * attributes: none
- */
-struct HeapSegHeader {
-	/* Length of the current segment - sizeof(HeapSegHeader) */
-        size_t Length;
-
-	/* Next segment in the heap */
-        HeapSegHeader *Next;
-
-	/* Last segment in the heap */
-        HeapSegHeader *Last;
-
-	/* Is this segment Free? */
-        bool Free;
-	
-	/*
-	 * function: CombineForward 
-	 * Unites this segment with the one that follows (if present).
-	 * 
-	 * arguments: void 
-	 * return: void 
-	 */
-        void CombineForward();
-
-	/*
-	 * function: CombineBackward
-	 * Unites this segment with the one that preceeds (if present).
-	 * 
-	 * arguments: void 
-	 * return: void 
-	 */
-        void CombineBackward();
-	
-	/*
-	 * function: Split
-	 * Creates a new segment from this one of the specified Length,
-	 * splitting us in two.
-	 * 
-	 * arguments: size_t
-	 * The size of the new segment, which will be subtracted
-	 * from this one's Length;
-	 *
-	 * return: HeapSegHeader *
-	 * A pointer to the new header that has been split from this one.
-	 */
-        HeapSegHeader *Split(size_t splitLenght);
-};
-
-/* Wether the heap has already been Initialized through the MKMI_InitializeHeap function
- * and the MKMI_DeinitializeHeap function has not completed its execution */
-static bool Initialized = false;
-
-/* Starting and ending addresses of the heap */
-static void *HeapStart;
-static void *HeapEnd;
-
-/* The last header in the heap */
-static HeapSegHeader *LastHeader;
+static void *heapStart;
+static void *heapEnd;
+static HeapSegHeader *lastHeader;
 
 void HeapSegHeader::CombineForward() {
-	/* Check if the following segment actually exists */
-        if(Next == NULL) return;
+        if(next == NULL) return;
+        if(!next->free) return;
 
-	/* If it does, continue only if it's free */
-        if(!Next->Free) return;
+        if(next == lastHeader) lastHeader = this;
 
-        if(Next == LastHeader) LastHeader = this;
-
-        if(Next->Next != NULL) {
-                Next->Next->Last = this;
+        if(next->next != NULL) {
+                next->next->last = this;
         }
 
-        Length = Length + Next->Length + sizeof(HeapSegHeader);
+        length = length + next->length + sizeof(HeapSegHeader);
 
-        Next = Next->Next;
+        next = next->next;
 }
 
 void HeapSegHeader::CombineBackward() {
-        if (Last != NULL && Last->Free) Last->CombineForward();
+        if (last != NULL && last->free) last->CombineForward();
 }
 
-HeapSegHeader *HeapSegHeader::Split(size_t splitLength) {
-        if (splitLength < 0x10) return NULL;
-        int64_t splitSegLength = Length - splitLength - (sizeof(HeapSegHeader));
-        if (splitSegLength < 0x10) return NULL;
+HeapSegHeader *HeapSegHeader::Split(size_t splitlength) {
+        if (splitlength < 0x10) return NULL;
+        int64_t splitSeglength = length - splitlength - (sizeof(HeapSegHeader));
+        if (splitSeglength < 0x10) return NULL;
 
-        HeapSegHeader *newSplitHeader = (HeapSegHeader*)((size_t)this + splitLength + sizeof(HeapSegHeader));
-	if(Next == NULL) Next = newSplitHeader;
-	else Next->Last = newSplitHeader;            // Set the Next segment's Last segment to our new segment
-        newSplitHeader->Next = Next;            // Set the new segment's Next segment to our original Next
-        Next = newSplitHeader;                  // Set our new segment to the Next segment
-        newSplitHeader->Last = this;            // Set our new segment's Last segment to us
-        newSplitHeader->Length = splitSegLength;// Set the new header's Length
-        newSplitHeader->Free = Free;            // Make sure both Free are the same
-        Length = splitLength;                   // Set the original segment's Length to the nes one
+        HeapSegHeader *newSplitHeader = (HeapSegHeader*)((size_t)this + splitlength + sizeof(HeapSegHeader));
+	if(next == NULL) next = newSplitHeader;
+	else next->last = newSplitHeader;            // Set the next segment's last segment to our new segment
+        newSplitHeader->next = next;            // Set the new segment's next segment to our original next
+        next = newSplitHeader;                  // Set our new segment to the next segment
+        newSplitHeader->last = this;            // Set our new segment's last segment to us
+        newSplitHeader->length = splitSeglength;// Set the new header's length
+        newSplitHeader->free = free;            // Make sure both free are the same
+        length = splitlength;                   // Set the original segment's length to the nes one
 
-        if (LastHeader == this) LastHeader = newSplitHeader;
+        if (lastHeader == this) lastHeader = newSplitHeader;
         return newSplitHeader;
 }
 
-static void MallocDebug() {
-       Syscall(0, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69);
+void MKMI_InitializeHeap(void *heapAddress, size_t initialSize) {
+	if(initialized) return;
+
+	initialized = true;
+
+	VMAlloc(heapAddress, initialSize, 0);
+
+        heapStart = heapAddress;
+        heapEnd = (void*)((size_t)heapStart + initialSize);
+
+        HeapSegHeader *startSeg = (HeapSegHeader*)heapAddress;
+        startSeg->length = initialSize - sizeof(HeapSegHeader);
+        startSeg->next = NULL;
+        startSeg->last = NULL;
+        startSeg->free = true;
+        lastHeader = startSeg;
 }
 
-/*
- * function: malloc 
- * Weak implementation of malloc. If another C library providing this function
- * is linked, it ignores this function.
- * 
- * arguments: size_t
- * The requested length of the memory area to allocate.
- *
- * return: void *
- * The in-heap address that has been allocated.
- */
-__attribute__((weak)) void *malloc(size_t size) {
-	if (size % 0x10 > 0){ // Not multiple of 0x10
+void MKMI_DeinitializeHeap() {
+	if(!initialized) return;
+
+	initialized = false;
+
+	VMFree(heapStart, (uintptr_t)heapEnd - (uintptr_t)heapStart);
+}
+
+#define MAX_TRIES 4
+
+size_t GetBlockSize(void *address) {
+	HeapSegHeader *currSeg = (HeapSegHeader*)heapStart;
+
+	while(true) {
+		if((uintptr_t)address == (uintptr_t)currSeg) {
+			if (!currSeg->free) return currSeg->length;
+			else return 0;
+		}
+
+		if (currSeg->next == NULL) break;
+		currSeg = currSeg->next;
+	}
+
+	return 0;
+}
+
+#include <mkmi.h>
+/* This heap has to replaced ASAP.
+   Weird behavior, incoherency and, most of all, why the hell is this needed */
+void MallocDebug(void *addr, size_t size) {
+	Syscall(0, 0x69, 0x69, 0x69, 0x69, 0x69, 0x69);
+	//MKMI_Printf("!!!! Malloc: 0x%x %d !!!!\r\n", addr, size);
+}
+
+void *Malloc(size_t size) {
+        if (size % 0x10 > 0){ // Not multiple of 0x10
                 size -= (size % 0x10);
                 size += 0x10;
         }
@@ -131,111 +106,62 @@ __attribute__((weak)) void *malloc(size_t size) {
         if (size == 0) return NULL;
 
 	for (int i = 0; i < MAX_TRIES; i++) {
-		HeapSegHeader *currSeg = (HeapSegHeader*)HeapStart;
+		HeapSegHeader *currSeg = (HeapSegHeader*)heapStart;
 
 		while(true) {
-			if (currSeg-> Free) {
-				if (currSeg->Length > size) {
+			if (currSeg-> free) {
+				if (currSeg->length > size) {
 					void *addr = (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
 					currSeg->Split(size);
-					currSeg->Free = false;
+					currSeg->free = false;
 
-					MallocDebug();
+					MallocDebug(addr, size);
 					return addr;
-				} else if (currSeg->Length == size) {
+				} else if (currSeg->length == size) {
 					void *addr = (void*)((uint64_t)currSeg + sizeof(HeapSegHeader));
-					currSeg->Free = false;
+					currSeg->free = false;
 
-					MallocDebug();
+					MallocDebug(addr, size);
 					return addr;
 				}
 			}
 
-			if (currSeg->Next == NULL) break;
-			currSeg = currSeg->Next;
+			if (currSeg->next == NULL) break;
+			currSeg = currSeg->next;
 		}
 
 		MKMI_ExpandHeap(size);
 	}
-
 }
 
-/*
- * function: free
- * Weak implementation of free. If another C library providing this function
- * is linked, it ignores this function.
- * 
- * arguments: void * 
- * The in-heap address that has to be freed.
- *
- * return: void
- */
-__attribute__((weak)) void free(void *address) {
-	if(address <= HeapStart || address >= HeapEnd) return;
-
-	HeapSegHeader *segment = (HeapSegHeader*)address - 1;
-
-	if(segment->Free) return;
-
-        segment->Free = true;
+void *Free(void *address) {
+        HeapSegHeader *segment = (HeapSegHeader*)address - 1;
+	if(segment->free) return;
+        segment->free = true;
         segment->CombineForward();
         segment->CombineBackward();
+
+	return address;
 }
 
-
-
-void MKMI_InitializeHeap(void *heapAddress, size_t initialSize) {
-	if(Initialized) return;
-	if(initialSize < sizeof(HeapSegHeader) + 1) return;
-
-	Initialized = true;
-
-	VMAlloc(heapAddress, initialSize, 0);
-
-        HeapStart = heapAddress;
-        HeapEnd = (void*)((size_t)HeapStart + initialSize);
-
-        HeapSegHeader *startSeg = (HeapSegHeader*)heapAddress;
-        startSeg->Length = initialSize - sizeof(HeapSegHeader);
-        startSeg->Next = NULL;
-        startSeg->Last = NULL;
-        startSeg->Free = true;
-        LastHeader = startSeg;
-}
-
-void MKMI_DeinitializeHeap() {
-	if(!Initialized) return;
-
-	Initialized = false;
-
-	VMFree(HeapStart, (uintptr_t)HeapEnd - (uintptr_t)HeapStart);
-}
-
-void *Malloc(size_t size) {
-	return malloc(size);
-}
-
-void Free(void *address) {
-	Free(address);
-}
-
-void MKMI_ExpandHeap(size_t Length) {
+void MKMI_ExpandHeap(size_t length) {
 	MKMI_Printf("!!!! Expand Head !!!!\r\n");
+	while(true);
 
-        if (Length % 4096) { // We can't allocate less that a page
-                Length -= Length % 4096;
-                Length += 4096;
+        if (length % 0x1000) { // We can't allocate less that a page
+                length -= length % 0x1000;
+                length += 0x1000;
         }
 
-        HeapSegHeader *newSegment = (HeapSegHeader*)HeapEnd;
+        HeapSegHeader *newSegment = (HeapSegHeader*)heapEnd;
 
-	VMAlloc(HeapEnd, Length, 0);
+	VMAlloc(heapEnd, length, 0);
 
-        newSegment->Free = true;
-        newSegment->Last = LastHeader;
-        LastHeader->Next = newSegment;
-        LastHeader = newSegment;
-        newSegment->Next = NULL;
-        newSegment->Length = Length - sizeof(HeapSegHeader);
+        newSegment->free = true;
+        newSegment->last = lastHeader;
+        lastHeader->next = newSegment;
+        lastHeader = newSegment;
+        newSegment->next = NULL;
+        newSegment->length = length - sizeof(HeapSegHeader);
         newSegment->CombineBackward();
 }
