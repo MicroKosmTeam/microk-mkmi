@@ -4,7 +4,7 @@
 void *PMAlloc(size_t length) {
 	void *addr;
 	
-	Syscall(SYSCALL_MEMORY_PALLOC, &addr, length, 0, 0, 0, 0);
+	Syscall(SYSCALL_MEMORY_PMALLOC, &addr, length, 0, 0, 0, 0);
 	
 	return addr;
 }
