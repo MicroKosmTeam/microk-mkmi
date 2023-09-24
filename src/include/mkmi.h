@@ -17,3 +17,4 @@
 #include <mkmi_module.h>
 #include <mkmi_string.h>
 #include <mkmi_syscall.h>
+#include <mkmi_tables.h>
