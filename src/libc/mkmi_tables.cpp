@@ -72,3 +72,43 @@ void PrintUserTCB() {
 
 }
 
+
+UserTCB *GetUserTCB() {
+	return (UserTCB*)0x7fffffffe000;
+}
+
+TableListElement *GetSystemTableList(UserTCB *userTCB) {
+	if(userTCB == NULL) return NULL;
+
+	return (TableListElement*)((uintptr_t)userTCB + userTCB->SystemTableListOffset);
+}
+
+TableListElement *GetServiceTableList(UserTCB *userTCB) {
+	if(userTCB == NULL) return NULL;
+
+	return (TableListElement*)((uintptr_t)userTCB + userTCB->ServiceTableListOffset);
+}
+
+TableHeader *GetTableWithSignature(TableListElement *list, uint8_t elements, const char *signature) {
+	if(list == NULL || signature == NULL || elements == 0) return NULL;
+
+	for (size_t i = 0; i < elements; i++) {
+		if(list[i].TablePointer != 0 && Memcmp(list[i].Signature, signature, 4) == 0) {
+			return (TableHeader*)list[i].TablePointer;
+		}
+	}
+
+	return NULL;
+}
+
+BootFile *GetFileFromBFST(BFST *bfst, const char *path) {
+	if(bfst == NULL || path == NULL) return NULL;
+
+	for(size_t file = 0; file < bfst->NumberOfFiles; ++file) {
+		if(Strcmp(bfst->Files[file].Path, path) == 0) {
+			return &bfst->Files[file];
+		}
+	}
+	
+	return NULL;
+}

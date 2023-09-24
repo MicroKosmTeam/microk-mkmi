@@ -29,10 +29,10 @@ struct KBST : public TableHeader {
 }__attribute__((packed));
 
 struct BootFile {
-	void *Address;
-	uint64_t Size;
-	char *Path;
-	char *Cmdline;
+	uintptr_t Address;
+	size_t Size;
+	char Path[256];
+	char Cmdline[256];
 }__attribute__((packed));
 
 struct BFST: public TableHeader {
@@ -43,3 +43,9 @@ struct BFST: public TableHeader {
 
 void PrintTableList(TableListElement *list, size_t elements);
 void PrintUserTCB();
+
+UserTCB *GetUserTCB();
+TableListElement *GetSystemTableList(UserTCB *userTCB);
+TableListElement *GetServiceTableList(UserTCB *userTCB);
+TableHeader *GetTableWithSignature(TableListElement *list, uint8_t elements, const char *signature);
+BootFile *GetFileFromBFST(BFST *bfst, const char *path);
