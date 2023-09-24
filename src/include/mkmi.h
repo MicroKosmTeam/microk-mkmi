@@ -35,5 +35,6 @@
 #include "mkmi_version.h"
 #include "mkmi_message.h"
 #include "mkmi_syscall.h"
+#include "mkmi_tables.h"
 
 #endif
