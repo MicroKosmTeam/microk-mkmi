@@ -26,6 +26,8 @@ struct KBST : public TableHeader {
 	size_t FreePhysicalMemory;
 	size_t UsedPhysicalMemory;
 	size_t ReservedPhysicalMemory;
+
+	uintptr_t RSDP;
 }__attribute__((packed));
 
 struct BootFile {
