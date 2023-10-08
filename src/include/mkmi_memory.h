@@ -13,6 +13,12 @@ typedef struct {
 	size_t MemoryBuffers;
 }__attribute((packed)) MemoryInfo;
 
+typedef struct {
+	uint8_t MemoryAccessType;
+	uintptr_t Address;
+	uintptr_t Data;
+}__attribute__((packed)) IORequest;
+
 void *PMAlloc(size_t length);
 
 void *VMAlloc(uintptr_t base, size_t length, size_t flags);
