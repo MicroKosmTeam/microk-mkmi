@@ -13,23 +13,33 @@ void MKMI_Printf(char *format, ...) {
         va_end(ap);
 }
 
-static void PrintChar(char ch) {
-	char str[2];
-	str[0] = ch;
-	str[1] = '\0';
-
-	Syscall(SYSCALL_DEBUG_PRINTK, str, 0, 0, 0, 0, 0);
+static void FlushBuffer(char *buffer) {
+	Syscall(SYSCALL_DEBUG_PRINTK, buffer, 0, 0, 0, 0, 0);
 }
 
-static void PrintString(char *string) {
-	Syscall(SYSCALL_DEBUG_PRINTK, string, 0, 0, 0, 0, 0);
+static void PrintChar(char *buffer, size_t *position, char ch) {
+	if(*position >= MAX_PRINTK_SYSCALL_MESSAGE_LENGTH - 1) {
+		FlushBuffer(buffer);
+		position = 0;
+	}
+
+	buffer[*position] = ch;
+	*position += 1;
+}
+
+static void PrintString(char *buffer, size_t *position, char *string) {
+	char *ptr = string;
+
+	while(*ptr) {
+		PrintChar(buffer, position, *ptr);
+		++ptr;
+	}
 }
 
 void MKMI_VPrintf(char *format, va_list ap) {
-        char message[1024];
-	Memset(message, '\0', 1024);
+        char messageBuffer[MAX_PRINTK_SYSCALL_MESSAGE_LENGTH + 1] = { '\0' };
+	size_t position = 0;
 
-	char *position = message;
         char *ptr = format;
 
         while(*ptr) {
@@ -39,34 +49,36 @@ void MKMI_VPrintf(char *format, va_list ap) {
                                 case 's': {
 					char *str = va_arg(ap, uint8_t*);
 
-					PrintString(str);
+					PrintString(messageBuffer, &position, str);
 					}
                                         break;
                                 case 'u':
                                 case 'd': {
-					char buffer[256];
-                                        Itoa(buffer, 'd', va_arg(ap, long long int));
+					char conversionBuffer[256];
+                                        Itoa(conversionBuffer, 'd', va_arg(ap, long long int));
 
-					PrintString(buffer);
+					PrintString(messageBuffer, &position, conversionBuffer);
 					}
                                         break;
                                 case 'x': {
-					char buffer[256];
-                                        Itoa(buffer, 'x', va_arg(ap, long long int));
+					char conversionBuffer[256];
+                                        Itoa(conversionBuffer, 'x', va_arg(ap, long long int));
 
-					PrintString(buffer);
+					PrintString(messageBuffer, &position, conversionBuffer);
 					}
                                         break;
                                 case '%':
-					PrintString("%%");
+					PrintString(messageBuffer, &position, "%%");
                                         break;
                                 case 'c':
-                                        PrintChar(va_arg(ap, char));
+                                        PrintChar(messageBuffer, &position, va_arg(ap, char));
                                         break;
 
                         }
                 } else {
-			PrintChar(*ptr++);
+			PrintChar(messageBuffer, &position, *ptr++);
                 }
         }
+		
+	FlushBuffer(messageBuffer);
 }
