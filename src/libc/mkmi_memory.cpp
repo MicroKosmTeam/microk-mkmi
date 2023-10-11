@@ -72,14 +72,41 @@ int Memcmp(const void* buf1, const void* buf2, size_t count) {
 	return memcmp(buf1, buf2, count);
 }
 
+
 size_t InPort(uintptr_t port, uint8_t size) {
 	size_t result = -1;
 
-	Syscall(SYSCALL_MEMORY_INOUT, port, false, NULL, &result, size, 0);
+	switch(size) {
+		case 8: size = MEMORY_ACCESS_BYTE; break;
+		case 16: size = MEMORY_ACCESS_WORD; break;
+		case 32: size = MEMORY_ACCESS_DWORD; break;
+		case 64: size = MEMORY_ACCESS_QWORD; break;
+		default: return -1;
+	}
+
+	IORequest request;
+	request.MemoryAccessType = MEMORY_ACCESS_READ | MEMORY_SYSIO | size;
+	request.Address = port;
+	request.Data = &result;
+
+	Syscall(SYSCALL_MEMORY_INOUT, &request, 1, 0, 0, 0, 0);
 
 	return result;
 }
 
 void OutPort(uintptr_t port, size_t data, uint8_t size) {
-	Syscall(SYSCALL_MEMORY_INOUT, port, true, data, NULL, size, 0);
+	switch(size) {
+		case 8: size = MEMORY_ACCESS_BYTE; break;
+		case 16: size = MEMORY_ACCESS_WORD; break;
+		case 32: size = MEMORY_ACCESS_DWORD; break;
+		case 64: size = MEMORY_ACCESS_QWORD; break;
+		default: data = -1; return;
+	}
+
+	IORequest request;
+	request.MemoryAccessType = MEMORY_ACCESS_WRITE | MEMORY_SYSIO | size;
+	request.Address = port;
+	request.Data = &data;
+
+	Syscall(SYSCALL_MEMORY_INOUT, &request, 1, 0, 0, 0, 0);
 }
