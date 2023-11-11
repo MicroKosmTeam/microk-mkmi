@@ -25,8 +25,9 @@ void PrintTableList(TableListElement *list, size_t elements) {
 					    "  Used physical memory:       %dkb\r\n"
 					    "  Reserved physical memory:   %dkb\r\n"
 					    " Firmware:\r\n"
-					    "  ACPI RSDP:                  0x%x\r\n",
-					    kbst->FreePhysicalMemory / 1024, kbst->UsedPhysicalMemory / 1024, kbst->ReservedPhysicalMemory / 1024, kbst->RSDP);
+					    "  ACPI RSDP:                  0x%x\r\n"
+					    "  Device tree:                0x%x\r\n",
+					    kbst->FreePhysicalMemory / 1024, kbst->UsedPhysicalMemory / 1024, kbst->ReservedPhysicalMemory / 1024, kbst->RSDP, kbst->DeviceTree);
 			} else if (Strcmp(tableSig, "BFST") == 0) {
 				BFST *bfst = (BFST*)table;
 				MKMI_Printf(" Files:\r\n"

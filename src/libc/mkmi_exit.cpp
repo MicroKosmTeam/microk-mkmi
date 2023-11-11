@@ -8,15 +8,11 @@
  */
 
 extern "C" void _exit(size_t exitCode) {
-	uintptr_t stack;
-	asm volatile("mov %%rbp, %0" : "=r"(stack) :: );
-	Syscall(SYSCALL_PROC_EXIT, exitCode, stack, 0, 0, 0, 0);
+	Syscall(SYSCALL_PROC_EXIT, exitCode, 0, 0, 0, 0, 0);
 }
 
 /* This is not like the _exit function. It is a simple yeild function.
  */
 extern "C" void _return(size_t returnCode) {
-	uintptr_t stack;
-	asm volatile("mov %%rbp, %0" : "=r"(stack) :: );
-	Syscall(SYSCALL_PROC_RETURN, returnCode, stack, 0, 0, 0, 0);
+	Syscall(SYSCALL_PROC_RETURN, returnCode, 0, 0, 0, 0, 0);
 }
