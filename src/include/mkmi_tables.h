@@ -28,8 +28,10 @@ struct KBST : public TableHeader {
 	size_t ReservedPhysicalMemory;
 
 	uintptr_t RSDP;
+	uintptr_t DeviceTree;
 }__attribute__((packed));
 
+			
 struct BootFile {
 	uintptr_t Address;
 	size_t Size;

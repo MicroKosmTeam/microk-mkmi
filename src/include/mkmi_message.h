@@ -6,23 +6,24 @@
 extern "C" {
 #endif
 
+typedef enum {
+	CREATE = 1,
+} QueueOperations;
+
 typedef struct {
-	uint32_t SenderVendorID : 32;
-	uint32_t SenderProductID : 32;
+	QueueOperations Operation;
+		
+	union {
+		struct {
+			size_t PreallocateSize;
+			size_t NewID;
+		} Create;
+	};
+}__attribute__((packed)) QueueOperationStruct;
 
-	size_t MessageSize : 64;
-}__attribute__((packed)) MKMI_Message;
-
-typedef int (*MKMI_MessageCallback)(MKMI_Message *, void *);
-
-MKMI_Message *ReadIncomingMessage();
-void *GetMessageDataStart(MKMI_Message *msg);
-void CleanUpIncomingMessage(MKMI_Message *msg);
-
-void MKMI_MessageHandler();
-void SetMessageHandlerCallback(MKMI_MessageCallback function);
-
-int SendDirectMessage(uint32_t vendorID, uint32_t productID, uint8_t *data, size_t length);
+int IPCQueueCtl(QueueOperationStruct *ctlStruct);
+int IPCMessageSend(size_t queueID, const uint8_t *messagePointer, size_t messageLength, size_t messageType, size_t messageFlags);
+int IPCMessageReceive(size_t queueID, uint8_t *messageBufferPointer, size_t maxMessageLength, size_t messageType, size_t messageFlags);
 
 #ifdef __cplusplus
 }

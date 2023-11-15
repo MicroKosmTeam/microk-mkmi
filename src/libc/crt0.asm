@@ -54,5 +54,3 @@ _end:
 	; Destroy the current process
 	mov rdi, rax ; Exit code
 	call _exit
-
-	jmp $ ; Just in case
