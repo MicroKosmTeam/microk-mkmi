@@ -10,15 +10,13 @@ extern Main
 
 global _start
 _start:
-	; We need those in a moment when we call Main
-	push rdi ; argc
-	push rsi ; argv
+	; We need this in a moment when we call Main
+	push rdi ; Parent information
 
 	; Initialize the MKMI library
 	call __mkmi_init
 
-	; Restore argc and argv.
-	pop rsi
+	; Restore parent information
 	pop rdi
 
 	; Run module initialization code 
