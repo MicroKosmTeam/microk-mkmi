@@ -1,6 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include <stddef.h>
+#include <cdefs.h>
 
 #ifdef __cplusplus__
 extern "C" {
@@ -23,23 +24,33 @@ typedef enum {
 
 typedef enum {
 	NONE = 0,
-	READ = 1 << 0,
-	WRITE = 1 << 1,
-	EXECUTE = 1 << 2,
+	ACCESS = 1 << 0,
+	SEE = 1 << 1,
+	RETYPE = 1 << 2,
 	GRANT = 1 << 3,
-	REVOKE = 1 << 4,
-	MINT = 1 << 5,
-	RETYPE = 1 << 6,
+	MINT = 1 << 4,
+	REVOKE = 1 << 5,
+	READ = 1 << 6,
+	WRITE = 1 << 7,
+	EXECUTE = 1 << 8,
 } MKMI_CapabilityRights;
 
+typedef enum {
+	NULL_SLOT = 0,
+	CSPACE_SLOT,
+	ROOT_CNODE_SLOT,
+	TASK_CONTROL_BLOCK_SLOT,
+	MEMORY_MAP_CNODE_SLOT,
+	FIRST_FREE_SLOT,
+} MKMI_RootCNodeSlots;
+
 typedef struct {
-	uint8_t Type;
-	uintptr_t Object;
-	size_t Size;
-	uint32_t AccessRights;
+	u8 Type;
+	uptr Object;
+	usize Size;
+	u32 AccessRights;
 }__attribute__((packed)) MKMI_Capability;
 
 #ifdef __cplusplus__
 }
 #endif
-
