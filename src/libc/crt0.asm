@@ -25,6 +25,3 @@ _start:
 	; Yeild back to the kernel
 	mov rdi, rax ; Exit code
 	call __mkmi_deinit
-
-	; We're done
-	jmp $
