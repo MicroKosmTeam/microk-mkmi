@@ -44,3 +44,11 @@ usize MKMI_PopArg(usize length, usize *token) {
 	
 	return arg;
 }
+
+u8 *MKMI_GetIndex(usize index) {
+	if (index >= VirtualArgsSize) {
+		return NULL;
+	}
+
+	return VirtualArgsAddr[index];
+}
