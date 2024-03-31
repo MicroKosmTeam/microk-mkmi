@@ -8,7 +8,7 @@ extern Main
 global _start
 
 _start:
-	; Run module initialization code 
+	; We get the virtual registers in RSI and their size in RDI
 	call Main
 
 	jmp $
