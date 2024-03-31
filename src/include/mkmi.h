@@ -19,4 +19,6 @@
  */
 
 #pragma once
+#include "mkmi_log.h"
 #include "mkmi_syscall.h"
+#include "mkmi_virtualregs.h"
