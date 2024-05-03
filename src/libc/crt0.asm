@@ -1,7 +1,5 @@
 [bits 64]
 
-section .text
-
 ; Module functions
 extern Main 
 
@@ -9,9 +7,10 @@ extern Main
 extern __mkmi_init
 extern __mkmi_deinit
 
+section .text
+
 ; Global function declarations
 global _start
-
 _start:
 	; We get the virtual registers in RSI and their size in RDI
 

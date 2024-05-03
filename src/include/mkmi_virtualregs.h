@@ -7,10 +7,10 @@
 extern "C" {
 #endif 
 
-void __MKMI_InitArgs(usize *args, usize argsSize);
-void __MKMI_SetArgs(usize totalArgs, va_list ap);
-usize __MKMI_GetArgIndex(usize index);
-void __MKMI_ClearArgs();
+void __mkmi_init_args(usize *args, usize args_size);
+void __mkmi_set_args(usize total_args, va_list ap);
+usize __mkmi_get_arg_index(usize index);
+void __mkmi_clear_args();
 
 #ifdef __cplusplus__
 }

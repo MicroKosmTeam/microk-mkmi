@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-void MKMI_Log(char *format, ...);
+void mkmi_log(char *format, ...);
 
 #ifdef __cplusplus
 }

@@ -2,40 +2,40 @@
 
 #include <stdarg.h>
 
-static usize *__VirtualArgsAddr;
-static usize __VirtualArgsSize;
+static usize *virtual_args_addr;
+static usize virtual_args_size;
 
-void __MKMI_InitArgs(usize *args, usize argsSize) {
-	__VirtualArgsAddr = args;
-	__VirtualArgsSize = argsSize;
+void __mkmi_init_args(usize *args, usize argsSize) {
+	virtual_args_addr = args;
+	virtual_args_size = argsSize;
 }
 
-void __MKMI_SetArgs(usize totalArgs, va_list ap) {
-	if (totalArgs * sizeof(usize) >= __VirtualArgsSize) {
+void __mkmi_set_args(usize total_args, va_list ap) {
+	if (total_args * sizeof(usize) >= virtual_args_size) {
 		return;
 	}
 
-	usize *virtualArgsPos = __VirtualArgsAddr;
+	usize *virtual_args_pos = virtual_args_addr;
 
-	for (usize current = 0; current < totalArgs; ++current) {
+	for (usize current = 0; current < total_args; ++current) {
 		void *argument = va_arg(ap, void*);
 
 		/* All arguments are padded to a usize boundary
 		 * 64-bit values in 32-bit systems, on the other hand, are only
 		 * available if split in two smaller 32-bit values */
-		*virtualArgsPos = (usize)argument;
-		++virtualArgsPos;
+		*virtual_args_pos = (usize)argument;
+		++virtual_args_pos;
 	}
 }
 
-usize __MKMI_GetArgIndex(usize index) {
-	if (index >= __VirtualArgsSize / sizeof(usize)) {
+usize __mkmi_get_arg_index(usize index) {
+	if (index >= virtual_args_size / sizeof(usize)) {
 		return 0;
 	}
 
-	return __VirtualArgsAddr[index];
+	return virtual_args_addr[index];
 }
 
-void __MKMI_ClearArgs() {
+void __mkmi_clear_args() {
 	//MEMCLR?
 }
