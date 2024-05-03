@@ -1,5 +1,7 @@
 #include "mkmi.h"
 
+#include <stdarg.h>
+
 inline __attribute__((always_inline))
 size_t __x64_int_syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t arg3, size_t arg4, size_t arg5, size_t arg6) {
 	asm volatile(
@@ -38,19 +40,33 @@ size_t __x64_syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t arg3, s
 	return syscallNum;
 }
 
-size_t __syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t arg3, size_t arg4, size_t arg5, size_t arg6) {
+size_t __fast_syscall(size_t syscallNum, size_t arg1, size_t arg2, size_t arg3, size_t arg4, size_t arg5, size_t arg6) {
+#ifdef __x86_64__
 	return __x64_syscall(syscallNum, arg1, arg2, arg3, arg4, arg5, arg6);
+#else
+#endif
 }
 
 
-size_t Syscall() {
-	return __syscall(
-		*(usize*)MKMI_GetIndex(0),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 1),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 2),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 3),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 4),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 5),
-		*(usize*)MKMI_GetIndex(sizeof(usize) * 6));
+size_t Syscall(usize totalArgs, ...) {
+	va_list ap;
+	va_start(ap, totalArgs);
+
+	__MKMI_SetArgs(totalArgs, ap);
+
+	va_end(ap);
+
+	usize status = __fast_syscall(
+		__MKMI_GetArgIndex(0),
+		__MKMI_GetArgIndex(1),
+		__MKMI_GetArgIndex(2),
+		__MKMI_GetArgIndex(3),
+		__MKMI_GetArgIndex(4),
+		__MKMI_GetArgIndex(5),
+		__MKMI_GetArgIndex(6));
+	
+	__MKMI_ClearArgs();
+
+	return status;
 }
 

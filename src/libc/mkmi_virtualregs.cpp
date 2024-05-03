@@ -1,54 +1,41 @@
 #include "mkmi.h"
 
-static u8 *VirtualArgsAddr;
-static usize VirtualArgsSize;
+#include <stdarg.h>
 
-void MKMI_InitArgs(u8 *args, usize argsSize) {
-	VirtualArgsAddr = args;
-	VirtualArgsSize = argsSize;
+static usize *__VirtualArgsAddr;
+static usize __VirtualArgsSize;
+
+void __MKMI_InitArgs(usize *args, usize argsSize) {
+	__VirtualArgsAddr = args;
+	__VirtualArgsSize = argsSize;
 }
 
-void MKMI_ClearArgs() {
+void __MKMI_SetArgs(usize totalArgs, va_list ap) {
+	if (totalArgs * sizeof(usize) >= __VirtualArgsSize) {
+		return;
+	}
+
+	usize *virtualArgsPos = __VirtualArgsAddr;
+
+	for (usize current = 0; current < totalArgs; ++current) {
+		void *argument = va_arg(ap, void*);
+
+		/* All arguments are padded to a usize boundary
+		 * 64-bit values in 32-bit systems, on the other hand, are only
+		 * available if split in two smaller 32-bit values */
+		*virtualArgsPos = (usize)argument;
+		++virtualArgsPos;
+	}
+}
+
+usize __MKMI_GetArgIndex(usize index) {
+	if (index >= __VirtualArgsSize / sizeof(usize)) {
+		return 0;
+	}
+
+	return __VirtualArgsAddr[index];
+}
+
+void __MKMI_ClearArgs() {
 	//MEMCLR?
-}
-
-void MKMI_PushArg(usize arg, usize length, usize *token) {
-	if (length > sizeof(usize)) {
-		return;
-	}
-	
-	if (*token >= VirtualArgsSize) {
-		return;
-	}
-
-	*(usize*)((uptr)VirtualArgsAddr + *token) = arg;
-	*token = *token + length;
-}
-
-usize MKMI_PopArg(usize length, usize *token) {
-	if (length > sizeof(usize)) {
-		return 0;
-	}
-
-	if (*token == 0) {
-		return 0;
-	}
-
-	usize arg = 0;
-
-	*token = *token - length;
-
-	usize *addr = (usize*)((uptr)VirtualArgsAddr + *token);
-	arg = *addr;
-	*addr = 0;
-	
-	return arg;
-}
-
-u8 *MKMI_GetIndex(usize index) {
-	if (index >= VirtualArgsSize) {
-		return NULL;
-	}
-
-	return VirtualArgsAddr[index];
 }

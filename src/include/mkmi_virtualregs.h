@@ -1,8 +1,18 @@
 #pragma once
 #include <cdefs.h>
 
-void MKMI_InitArgs(u8 *args, usize argsSize);
-void MKMI_ClearArgs();
-void MKMI_PushArg(usize arg, usize length, usize *token);
-usize MKMI_PopArg(usize length, usize *token);
-u8 *MKMI_GetIndex(usize index);
+#include <stdarg.h>
+
+#ifdef __cplusplus__
+extern "C" {
+#endif 
+
+void __MKMI_InitArgs(usize *args, usize argsSize);
+void __MKMI_SetArgs(usize totalArgs, va_list ap);
+usize __MKMI_GetArgIndex(usize index);
+void __MKMI_ClearArgs();
+
+#ifdef __cplusplus__
+}
+#endif 
+

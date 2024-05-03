@@ -3,19 +3,19 @@
 #include <stdarg.h>
 
 static void PutStr(const char *str) {
-	__syscall(SYSCALL_VECTOR_DEBUG, str, 's', 0, 0, 0, 0);
+	__fast_syscall(SYSCALL_VECTOR_DEBUG, str, 's', 0, 0, 0, 0);
 }
 
 static void PutChar(const char ch) {
-	__syscall(SYSCALL_VECTOR_DEBUG, ch, 'c', 0, 0, 0, 0);
+	__fast_syscall(SYSCALL_VECTOR_DEBUG, ch, 'c', 0, 0, 0, 0);
 }
 
 static void PutHex(usize hex) {
-	__syscall(SYSCALL_VECTOR_DEBUG, hex, 'x', 0, 0, 0, 0);
+	__fast_syscall(SYSCALL_VECTOR_DEBUG, hex, 'x', 0, 0, 0, 0);
 }
 
 static void PutDec(long dec) {
-	__syscall(SYSCALL_VECTOR_DEBUG, dec, 'd', 0, 0, 0, 0);
+	__fast_syscall(SYSCALL_VECTOR_DEBUG, dec, 'd', 0, 0, 0, 0);
 }
 
 void MKMI_Log(char *format, ...) {
