@@ -5,9 +5,9 @@
 static usize *virtual_args_addr;
 static usize virtual_args_size;
 
-void __mkmi_init_args(usize *args, usize argsSize) {
+void __mkmi_init_args(usize *args, usize args_size) {
 	virtual_args_addr = args;
-	virtual_args_size = argsSize;
+	virtual_args_size = args_size;
 }
 
 void __mkmi_set_args(usize total_args, va_list ap) {
@@ -36,6 +36,16 @@ usize __mkmi_get_arg_index(usize index) {
 	return virtual_args_addr[index];
 }
 
-void __mkmi_clear_args() {
-	//MEMCLR?
+void __mkmi_set_arg_index(usize index, usize val) {
+	if (index >= virtual_args_size / sizeof(usize)) {
+		return;
+	}
+
+	virtual_args_addr[index] = val;
+}
+
+void __mkmi_clear_args(usize total_args) {
+	for (usize i = 0; i < total_args; ++i) {
+		__mkmi_set_arg_index(i, 0);
+	}
 }

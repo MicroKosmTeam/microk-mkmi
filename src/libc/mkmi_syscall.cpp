@@ -65,7 +65,7 @@ size_t syscall(usize total_args, ...) {
 		__mkmi_get_arg_index(5),
 		__mkmi_get_arg_index(6));
 	
-	__mkmi_clear_args();
+	__mkmi_clear_args(total_args);
 
 	return status;
 }
