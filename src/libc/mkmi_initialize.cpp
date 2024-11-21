@@ -1,12 +1,10 @@
 #include "mkmi.h"
 
-extern "C" void __mkmi_init(usize vregs_size, usize *vregs) {
-	__mkmi_init_args(vregs, vregs_size);
+extern "C" void __mkmi_init() {
+	mkmi_log("Hello, world, from MKMI\r\n");
 
-	mkmi_log("VRegs:    0x%x\r\n"
-		 "VRegs size: %d\r\n", vregs, vregs_size);
 }
 
 extern "C" void __mkmi_deinit(int ret_code) {
-
+	mkmi_log("Process exited with code: %d\r\n", ret_code);
 }
