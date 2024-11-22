@@ -7,8 +7,6 @@ PHDRS
 
 SECTIONS
 {
-	. = 0xffffffff88000000;
-
 	.text : {
 		*(.text .text.*)
 	} :text
