@@ -13,14 +13,12 @@ section .text
 global _start
 _start:
 	; Save them
-	push rdi
-	push rsi
+	push rax
 
 	; Initialize MKMI
 	call __mkmi_init
 
 	; Restore them
-	pop rsi
 	pop rdi
 
 	; Call main

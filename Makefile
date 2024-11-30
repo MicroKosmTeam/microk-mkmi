@@ -27,6 +27,7 @@ CFLAGS = -ffreestanding \
 	 -fno-pie             \
 	 -fno-PIC                \
 	 -march=x86-64        \
+	 -mcmodel=large \
 	 -ggdb
 
 
