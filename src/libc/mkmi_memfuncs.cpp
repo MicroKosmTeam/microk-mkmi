@@ -1,5 +1,9 @@
 #include <mkmi_memfuncs.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef	int word;		/* "word" used for optimal copy speed */
 
 #define	wsize	sizeof(word)
@@ -177,3 +181,81 @@ size_t strlen(const char *str) {
 	for (s = str; *s; ++s);
 	return(s - str);
 }
+
+__attribute__((weak))
+bool is_delim(char c, char *delim) {
+	while(*delim != '\0') {
+		if(c == *delim)
+			return true;
+		delim++;
+	}
+
+	return false;
+}
+
+
+__attribute__((weak))
+size_t strcspn(const char *s1, const char *s2) {
+	const char *sc1, *sc2;
+	for (sc1 = s1; *sc1 != '\0'; ++sc1) {
+		for (sc2 = s2; *sc2 != '\0'; ++sc2) {
+			if (*sc1 == *sc2)
+				return (sc1 - s1);
+		}
+	}
+	return (sc1 - s1);
+}
+
+__attribute__((weak))
+size_t strspn(const char *s1, const char *s2) {
+	const char *sc1, *sc2;
+	for (sc1 = s1; *sc1 != '\0'; ++sc1) {
+		for (sc2 = s2; ; ++sc2) {
+			if (*sc2 == '\0') {
+				return (sc1 - s1);
+			} else if (*sc1 == *sc2) {
+				break;
+			}
+		}
+	}   
+	return (sc1 - s1);
+}
+
+__attribute__((weak))
+char *strtok(char *string, const char *delim, char **savePtr) {
+	char *end;
+
+	if (string == NULL) {
+		string = *savePtr;
+	}
+
+	if (*string == '\0') {
+		*savePtr = string;
+		return NULL;
+	}
+
+	/* Scan leading delimiters.  */
+	string += strspn(string, delim);
+	if (*string == '\0'){
+		*savePtr = string;
+		return NULL;
+	}
+
+	/* Find the end of the token.  */
+	end = string + strcspn(string, delim);
+	if (*end == '\0') {
+		*savePtr = end;
+		return string;
+	}
+
+	/* Terminate the token and make *SAVE_PTR point past it.  */
+	*end = '\0';
+	*savePtr = end + 1;
+	return string;
+}
+
+
+
+#ifdef __cplusplus
+}
+#endif
